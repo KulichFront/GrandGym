@@ -1,4 +1,5 @@
 package com.example.andegym
+
 import android.graphics.Paint
 import android.os.Bundle
 import androidx.compose.foundation.layout.Box
@@ -94,6 +95,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.andegym.AddFriend
 import com.example.andegym.navigation.AppNavHost
+import com.example.andegym.ui.components.BottomNavigation
+import com.example.andegym.ui.dashboard.HomeScreen
+import com.example.andegym.ui.dashboard.HowReady
 import com.example.andegym.ui.theme.AndeGymTheme
 
 
@@ -114,37 +118,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Composable
-fun TopBarHome(){
-    Row(modifier = Modifier
-        .height(56.dp)
-        .fillMaxWidth()
-        .background(Color(0xFF1A1A1A))
-        .padding(start = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,)
-    {
-        Icon(
-            imageVector = Icons.Default.Pets,
-            contentDescription = "Иконка приложения",
-            tint=Color(0xFF6C5CE7),
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text ="GrandGym",
-            fontSize = 20.sp,
-            color = Color(0xFFE0E0E0),
-            fontFamily = FontFamily(Font(R.font.jura_bold))
-        )
-        Spacer(Modifier.weight(1f))
-        Icon(
-            imageVector = Icons.Default.Notifications,
-            contentDescription = "Уведомления",
-            tint=Color(0xFFE0E0E0),
-            modifier = Modifier.size(24.dp),
-        )
-    }
-}
 
 @Composable
 fun TopBarGym(){
@@ -401,184 +374,13 @@ fun TextTip(){
     }
 }
 
-@Composable
-fun Hello(){
-    Row(
-
-        Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                text="С возвращением, Ваня",
-                fontSize = 14.sp,
-                color = Color(0xFFA0A0A0)
-            )
-            Text(
-                text="ПОГНАЛИ",
-                fontSize = 36.sp,
-                fontFamily = FontFamily(Font(R.font.jura_bold)),
-                color=Color(0xFFE0E0E0)
-            )
-            Text(
-                text="Сегодня твой день",
-                fontSize = 14.sp,
-                color=Color(0xFF6C5CE7)
-            )
-        }
-        Spacer(Modifier.width(16.dp))
-        Icon(
-            imageVector = Icons.Default.FitnessCenter,
-            contentDescription = "Маскот должен быть",
-            tint=Color(0xFFE0E0E0),
-            modifier = Modifier.size(120.dp),
-        )
-    }
-}
-
-@Composable
-fun HowReady(){
-    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C)), modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 24.dp, start = 16.dp, end = 16.dp)
-        .border(1.dp, Color(0xFF3A3A3A), RoundedCornerShape(16.dp))){
-        Column(
 
 
-            modifier=Modifier
-                .fillMaxWidth()
-                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ){
-                Icon(
-                    imageVector = Icons.Default.Bedtime,
-                    contentDescription="",
-                    tint=Color(0xFF6C5CE7),
-                    modifier=Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text="Готовность",
-                    fontSize = 15.sp,
-                    color = Color(0xFFA0A0A0)
 
-                )
 
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text="87%",
-                fontSize = 40.sp,
-                fontFamily = FontFamily(Font(R.font.jura_bold)),
-                color=Color(0xFFE0E0E0)
 
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Ты в порядке. Жми.",
-                fontSize = 15.sp,
-                color = Color(0xFF6C5CE7)
-            )
-        }
-    }
-}
 
-@Composable
-fun StartGym(
-    startGymClick: () -> Unit
-){
-    Button(onClick = startGymClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C5CE7)),
-        shape = RoundedCornerShape(20.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, top = 40.dp, end = 16.dp)
-            .height(70.dp))
-    {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
 
-        ){
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                tint = Color.White,
-                contentDescription = "Start",
-                modifier= Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text="НАЧАТЬ",
-                fontFamily = FontFamily(Font(R.font.jura_bold)),
-                fontSize = 16.sp,
-                color=Color.White
-            )
-        }
-    }
-}
-
-@Composable
-fun Exercises(){
-    Text(
-        text="План на сегодня",
-        fontSize = 14.sp,
-        fontFamily=FontFamily(Font(R.font.manrope_semibold)),
-        color=Color(0xFFA0A0A0),
-        modifier=Modifier.padding(top=24.dp,start=16.dp)
-    )
-    Spacer(Modifier.height(12.dp))
-    class Exercise(val name:String,val number:String)
-    val listExercises=mutableListOf(Exercise("Жим лежа","4x8"),Exercise("Присед","3x10"),Exercise("Становая","4x6"),Exercise("Подтягивания","15x3"))
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(start=16.dp)
-    )
-    {items(listExercises){
-        item->
-        Card(
-            shape = RoundedCornerShape(12.dp),
-            colors=CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C)),
-            modifier = Modifier
-                .height(100.dp)
-                .width(140.dp)
-        )
-    {
-            Column(modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center)
-            {
-                Text(
-                    text=item.name,
-                    fontFamily=FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 16.sp,
-                    color = Color(0xFFE0E0E0)
-                    )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text=item.number,
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 14.sp,
-                    color=Color(0xFFA0A0A0)
-                )
-                Icon(
-                    imageVector = Icons.Default.FitnessCenter,
-                    tint=Color(0xFF6C5CE7),
-                    contentDescription = "Иконка упраженения",
-                    modifier=Modifier.size(25.dp)
-                )
-            }
-    }
-    }
-
-    }
-}
 
 @Composable
 fun FriendsList() {
@@ -790,151 +592,9 @@ fun AddFriend(){
 }
 
 
-@Composable
-fun BottomNavigation(
-    homeClick:()->Unit,
-    gymClick:()->Unit,
-    friendsListClick:()->Unit,
-    profileClick:()->Unit,
-){
-    Column(){
-        Divider(color = Color(0xFF2C2C2C), thickness = 1.dp)
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .background(Color(0xFF1A1A1A))
-        ){
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight().clickable(onClick =homeClick ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-
-            ){
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint=Color(0xFF6C5CE7),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text="Главная",
-                    fontSize = 10.sp,
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    color=Color.White
-                )
 
 
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight().clickable(onClick = gymClick),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-                Icon(
-                    imageVector = Icons.Default.FitnessCenter,
-                    contentDescription = "Home",
-                    tint=Color(0xFF6C5CE7),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text="Тренировка",
-                    fontSize = 10.sp,
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    color=Color.White
-                )
 
-
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight().clickable(onClick = friendsListClick),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Home",
-                    tint=Color(0xFF6C5CE7),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text="Свои",
-                    fontSize = 10.sp,
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    color=Color.White
-                )
-
-
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight().clickable(onClick = profileClick),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-                Icon(
-                    imageVector = Icons.Default.Pets,
-                    contentDescription = "Home",
-                    tint=Color(0xFF6C5CE7),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text="Профиль",
-                    fontSize = 10.sp,
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    color=Color.White
-                )
-
-
-            }
-        }
-    }
-}
-
-
-@Composable
-fun HomeScreen(
-    startGymClick:()->Unit,
-    homeClick:()->Unit,
-    gymClick:()->Unit,
-    friendsListClick:()->Unit,
-    profileClick:()->Unit,
-){
-    Column(
-        modifier = Modifier
-
-            .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
-            .statusBarsPadding()
-            .navigationBarsPadding()
-
-    ){
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ){
-            TopBarHome()
-            Hello()
-            HowReady()
-            StartGym(startGymClick)
-            Exercises()
-        }
-
-        BottomNavigation(homeClick,gymClick,friendsListClick,profileClick)
-    }
-}
 
 @Composable
 fun TrainingScreen(

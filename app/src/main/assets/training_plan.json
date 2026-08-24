@@ -1,0 +1,47 @@
+[
+  {
+    "day": "MONDAY",
+    "exercise": [
+      {"name": "Жим лежа","sets": 4,"reps": 8,"weight": 30},
+      {"name": "Жим гантелей сидя","sets": 3,"reps": 10,"weight": 8},
+      {"name": "Разводка гантелей","sets": 3,"reps": 12,"weight": 6},
+      {"name": "Отжимания на брусьях","sets": 3,"reps": 10,"weight": 0},
+      {"name": "Подъём штанги на бицепс","sets": 3,"reps": 12,"weight": 15}
+    ]
+  },
+  {
+    "day": "TUESDAY",
+    "exercise": []
+  },
+  {
+    "day": "WEDNESDAY",
+    "exercise": [
+      {"name": "Становая тяга","sets": 4,"reps": 6,"weight": 40},
+      {"name": "Тяга штанги в наклоне","sets": 3,"reps": 8,"weight": 25},
+      {"name": "Тяга верхнего блока","sets": 3,"reps": 10,"weight": 25},
+      {"name": "Подтягивания ","sets": 3,"reps": 8,"weight": 0},
+      {"name": "Молотки с гантелями","sets": 3,"reps": 12,"weight": 8}
+    ]
+  },
+  {
+    "day": "THURSDAY",
+    "exercise": []
+  },
+  {
+    "day": "FRIDAY",
+    "exercise": [
+      {"name": "Приседания со штангой","sets": 4,"reps": 8,"weight": 25},
+      {"name": "Жим ногами","sets": 3,"reps": 10,"weight": 60},
+      {"name": "Выпады с гантелями","sets": 3,"reps": 10,"weight": 8},
+      {"name": "Подъём на носки","sets": 3,"reps": 10,"weight": 20},
+      {"name": "Скручивания","sets": 3,"reps": 10,"weight": 0}
+    ]
+  },
+  {
+    "day": "SATURDAY",
+    "exercise": []
+  },{
+  "day": "SUNDAY",
+  "exercise": []
+}
+]

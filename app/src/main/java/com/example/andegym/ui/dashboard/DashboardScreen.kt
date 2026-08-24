@@ -46,9 +46,6 @@ import com.example.andegym.R
 import com.example.andegym.data.model.ExercisePlan
 import com.example.andegym.ui.components.BottomNavigation
 import com.example.andegym.viewmodel.DashboardViewModel
-import com.example.andegym.viewmodel.Gym1
-import com.example.andegym.viewmodel.Gym2
-import com.example.andegym.viewmodel.Gym3
 
 
 
@@ -170,17 +167,28 @@ fun Exercises( plan:List<ExercisePlan>){
         modifier=Modifier.padding(top=24.dp,start=16.dp)
     )
     Spacer(Modifier.height(12.dp))
+    if(plan.isNotEmpty()){
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(start=16.dp)
+        )
+        {
 
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(start=16.dp)
-    )
-    {
-
-        items(plan) { gym ->
-            CardGym(gym)
+            items(plan) { gym ->
+                CardGym(gym)
+            }
         }
     }
+    else{
+        Text(
+            text="Отдыхай, ты хорошо поработал",
+            fontSize = 14.sp,
+            fontFamily=FontFamily(Font(R.font.manrope_semibold)),
+            color=Color(0xFFA0A0A0),
+            modifier=Modifier.padding(top=24.dp,start=16.dp)
+        )
+    }
+
 
     }
 

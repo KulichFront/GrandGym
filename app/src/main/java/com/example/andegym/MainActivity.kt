@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarToday
@@ -66,6 +67,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sms
@@ -99,6 +101,7 @@ import com.example.andegym.ui.components.BottomNavigation
 import com.example.andegym.ui.dashboard.HomeScreen
 import com.example.andegym.ui.dashboard.HowReady
 import com.example.andegym.ui.theme.AndeGymTheme
+import com.example.andegym.ui.trainig.TrainingScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -119,31 +122,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Composable
-fun TopBarGym(){
-    Row(verticalAlignment = Alignment.CenterVertically,modifier=Modifier
-        .height(56.dp)
-        .fillMaxWidth()) {
 
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            tint = Color(0xFFE0E0E0),
-            contentDescription = "Back",
-            modifier = Modifier
-                .size(40.dp)
-                .padding(start = 16.dp)
-        )
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text="ТРЕНИРОВКА",
-            fontFamily = FontFamily(Font(R.font.jura_bold)),
-            fontSize = 18.sp,
-            color=Color(0xFFE0E0E0),
-
-        )
-    }
-
-}
 
 
 @Composable
@@ -162,7 +141,7 @@ fun TopBarFriends(){
         )
         Spacer(Modifier.width(12.dp))
         Text(
-            text="Свои",
+            text="СВОИ",
             fontFamily = FontFamily(Font(R.font.jura_bold)),
             fontSize = 18.sp,
             color=Color(0xFFE0E0E0),
@@ -188,7 +167,7 @@ fun TopBarProfile(){
         )
         Spacer(Modifier.width(12.dp))
         Text(
-            text="Профиль",
+            text="ПРОФИЛЬ",
             fontFamily = FontFamily(Font(R.font.jura_bold)),
             fontSize = 18.sp,
             color=Color(0xFFE0E0E0),
@@ -197,133 +176,8 @@ fun TopBarProfile(){
     }
 }
 
-@Composable
-fun VideoAnaliz(){
-    Card(
-        modifier = Modifier
-            .padding(top = 24.dp, start = 16.dp, end = 16.dp)
-            .height(240.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C)),
 
-    ){
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
-            Icon(
-                imageVector = Icons.Default.Videocam,
-                tint=Color(0xFF666666),
-                contentDescription = "VideoCam",
-                modifier = Modifier.size(48.dp),
 
-                )
-        }
-
-    }
-}
-
-@Composable
-fun CardGym(){
-    Box(
-        modifier = Modifier
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            .fillMaxWidth()
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp)),
-    ){
-        Column(modifier=Modifier.padding(16.dp), horizontalAlignment = Alignment.Start)
-        {
-            Text(
-                text="Приседания",
-                fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                fontSize = 16.sp,
-                color=Color(0xFFE0E0E0)
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text="Подход 3 из 4",
-                fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                color=Color(0xFFA0A0A0)
-            )
-            Spacer(Modifier.height(16.dp))
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-                ){
-                Icon(
-                    imageVector = Icons.Default.FitnessCenter,
-                    tint=Color(0xFF6C5CE7),
-                    contentDescription = "weight",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text="95кг",
-                    fontFamily = FontFamily(Font(R.font.jura_bold)),
-                    color=Color(0xFFE0E0E0),
-                    fontSize = 32.sp
-                )
-                }
-
-        }
-    }
-}
-
-@Composable
-fun ButtonGym(){
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),modifier=Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-    ){
-        Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3A)),shape=RoundedCornerShape(16.dp), modifier = Modifier
-            .height(48.dp)
-            .weight(1f))
-        {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ){
-                Icon(
-                    imageVector = Icons.Default.Pause,
-                    tint=Color(0xFFE0E0E0),
-                    contentDescription = "PAUSE",
-                    modifier= Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text="ПАУЗА",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 14.sp,
-                    color=Color(0xFFE0E0E0)
-                )
-            }
-        }
-        Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6B6B)),shape=RoundedCornerShape(16.dp), modifier = Modifier
-            .height(48.dp)
-            .weight(1f))
-        {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ){
-                Icon(
-                    imageVector = Icons.Default.Stop,
-                    tint=Color.White,
-                    contentDescription = "STOP",
-                    modifier= Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text="ЗАВЕРШИТЬ",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 14.sp,
-                    color=Color.White
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun SearchFriend(){
@@ -350,37 +204,6 @@ fun SearchFriend(){
             )
     }
 }
-
-@Composable
-fun TextTip(){
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ){
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text="Спина сутулится",
-            fontFamily = FontFamily(Font(R.font.manrope_regular)),
-            fontSize = 14.sp,
-            color=Color(0xFFFF6B6B)
-        )
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text="0:37",
-            fontFamily = FontFamily(Font(R.font.jura_bold)),
-            fontSize = 48.sp,
-            color=Color(0xFFE0E0E0)
-        )
-    }
-}
-
-
-
-
-
-
-
-
 
 @Composable
 fun FriendsList() {
@@ -596,38 +419,7 @@ fun AddFriend(){
 
 
 
-@Composable
-fun TrainingScreen(
-    homeClick:()->Unit,
-    gymClick:()->Unit,
-    friendsListClick:()->Unit,
-    profileClick:()->Unit,
-){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
-            .statusBarsPadding()
-            .navigationBarsPadding()
 
-    ){
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ){
-            TopBarGym()
-            VideoAnaliz()
-            TextTip()
-            CardGym()
-            ButtonGym()
-        }
-
-        BottomNavigation(homeClick,gymClick,friendsListClick,profileClick)
-    }
-
-
-}
 
 @Composable
 fun FriendsListScreen(

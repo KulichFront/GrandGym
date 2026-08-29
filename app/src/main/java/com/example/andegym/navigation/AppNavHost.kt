@@ -8,8 +8,8 @@ import com.example.andegym.FriendsListScreen
 
 import com.example.andegym.Onboarding
 import com.example.andegym.ProfileScreen
-import com.example.andegym.TrainingScreen
 import com.example.andegym.ui.dashboard.HomeScreen
+import com.example.andegym.ui.trainig.TrainingScreen
 
 @Composable
 fun AppNavHost(

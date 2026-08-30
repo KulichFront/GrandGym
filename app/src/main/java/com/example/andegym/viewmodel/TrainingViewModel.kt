@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.andegym.App
+import com.example.andegym.data.UserProgressManager
 import com.example.andegym.data.model.ExercisePlan
 import com.example.andegym.data.parser.TrainingPlanParser
 import kotlinx.coroutines.delay
@@ -14,6 +16,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class TrainingViewModel(application: Application): AndroidViewModel(application){
+
+    val app=application as App
+    val dataStore=app.dataStore
+    val userProgressManager= UserProgressManager(dataStore)
 
     private val _isRunning= MutableStateFlow(false)
     val isRunning: StateFlow<Boolean> = _isRunning
@@ -110,6 +116,9 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
     fun finishCurrentExercise(){
         if(_currentIndex.value+1>=_todayPlan.value.size){
             _isWorkoutFinished.value=true
+            viewModelScope.launch {
+                userProgressManager.completeWorkout()
+            }
         }
         else{
             startRest()

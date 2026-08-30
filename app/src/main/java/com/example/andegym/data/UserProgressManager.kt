@@ -16,6 +16,7 @@ class UserProgressManager(private  val dataStore: DataStore<Preferences>){
     companion object{
         val XP_KEY= intPreferencesKey("xp")
         val LAST_WORKOUT_DAY_KEY= stringPreferencesKey("last_day")
+        val WORKOUT_COUNT_KEY=intPreferencesKey("workout_count_key")
     }
 
     val xpFlow: Flow<Int> = dataStore.data.map {
@@ -41,5 +42,26 @@ class UserProgressManager(private  val dataStore: DataStore<Preferences>){
     }
     fun  getLevel(xp:Int):Int{
         return (xp / 100) + 1
+    }
+    suspend fun addXp(ammount:Int){
+        dataStore.edit { preferences ->
+
+            val currentXP = preferences[XP_KEY] ?: 0
+            val newXp=currentXP+ammount
+            preferences.toMutablePreferences().apply {
+                this[XP_KEY]=newXp
+            }
+
+        }
+    }
+
+    suspend fun incrementWorkoutCount(){
+        dataStore.edit { preferences ->
+            val currentCount=preferences[WORKOUT_COUNT_KEY] ?:0
+            val newCount=currentCount+1
+            preferences.toMutablePreferences().apply {
+                this[WORKOUT_COUNT_KEY]=newCount
+            }
+        }
     }
 }

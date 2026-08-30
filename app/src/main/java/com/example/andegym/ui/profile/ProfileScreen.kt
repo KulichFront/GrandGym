@@ -59,6 +59,11 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
 ){
     val xp by viewModel.xpFlow.collectAsState(initial = 0)
     val level = viewModel.getlevel(xp)
+    val firstWorkoutFlow by viewModel.firstWorkoutFlow.collectAsState(initial = false)
+    val threeWorkoutFlow by viewModel.threeWorkoutFlow.collectAsState(initial = false)
+    val tenWorkoutFlow by viewModel.tenWorkoutFlow.collectAsState(initial = false)
+    val earlyBirdFlow by viewModel.earlyBirdFlow.collectAsState(initial = false)
+    val heavyLifterFlow by viewModel.heavyLifterFlow.collectAsState(initial = false)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +81,13 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
             TopBarProfile()
             ProfileAvatar()
             ScaleOfXP(xp,level)
-            Achievements()
+            Achievements(
+                firstWorkout=firstWorkoutFlow,
+                threeWorkout=threeWorkoutFlow,
+                tenWorkout = tenWorkoutFlow,
+                earlyBird=earlyBirdFlow,
+                heavyLifter = heavyLifterFlow
+            )
             Statictics()
             Settings()
         }
@@ -179,7 +190,11 @@ fun ScaleOfXP(xp:Int,level:Int){
 }
 
 @Composable
-fun Achievements(){
+fun Achievements(firstWorkout: Boolean,
+                 threeWorkout: Boolean,
+                 tenWorkout: Boolean,
+                 earlyBird: Boolean,
+                 heavyLifter: Boolean){
     Box(Modifier
         .fillMaxWidth()
         .padding(start = 16.dp, end = 16.dp, top = 24.dp)){
@@ -212,14 +227,14 @@ fun Achievements(){
                                 modifier=Modifier.weight(1f)) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
-                                    tint=Color(0xFF6C5CE7),
+                                    tint=if(firstWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     contentDescription = "achievement",
                                     modifier = Modifier.size(32.dp)
                                 )
 
                                 Text(
                                     text="Первая кровь",
-                                    color=Color(0xFF6C5CE7),
+                                    color=if(firstWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily(Font(R.font.manrope_regular))
                                 )
@@ -228,14 +243,14 @@ fun Achievements(){
                                 modifier=Modifier.weight(1f)) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
-                                    tint=Color(0xFF6C5CE7),
+                                    tint=if(threeWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     contentDescription = "achievement",
                                     modifier = Modifier.size(32.dp)
                                 )
 
                                 Text(
                                     text="Ты всё ещё здесь?",
-                                    color=Color(0xFF6C5CE7),
+                                    color=if(threeWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily(Font(R.font.manrope_regular))
                                 )
@@ -244,14 +259,14 @@ fun Achievements(){
                                 modifier=Modifier.weight(1f)) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
-                                    tint=Color(0xFF6C5CE7),
+                                    tint=if(earlyBird) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     contentDescription = "achievement",
                                     modifier = Modifier.size(32.dp)
                                 )
 
                                 Text(
                                     text="Жаворонок",
-                                    color=Color(0xFF6C5CE7),
+                                    color=if(earlyBird) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily(Font(R.font.manrope_regular))
                                 )
@@ -263,14 +278,14 @@ fun Achievements(){
                                 modifier=Modifier.weight(1f)) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
-                                    tint=Color(0xFF3A3A3A),
+                                    tint=if(heavyLifter) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     contentDescription = "achievement",
                                     modifier = Modifier.size(32.dp)
                                 )
 
                                 Text(
                                     text="Мешок картошки",
-                                    color=Color(0xFF3A3A3A),
+                                    color=if(heavyLifter) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily(Font(R.font.manrope_regular))
                                 )
@@ -279,14 +294,14 @@ fun Achievements(){
                                 modifier=Modifier.weight(1f)) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
-                                    tint=Color(0xFF3A3A3A),
+                                    tint=if(tenWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     contentDescription = "achievement",
                                     modifier = Modifier.size(32.dp)
                                 )
 
                                 Text(
                                     text="Батя в зале",
-                                    color=Color(0xFF3A3A3A),
+                                    color=if(tenWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily(Font(R.font.manrope_regular))
                                 )

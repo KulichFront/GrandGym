@@ -1,9 +1,9 @@
 package com.example.andegym.data.local
 
-import androidx.room3.Dao
-import androidx.room3.Database
-import androidx.room3.Insert
-import androidx.room3.Query
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+
 
 @Dao
 interface  WorkoutDao{
@@ -15,9 +15,9 @@ interface  WorkoutDao{
 
     @Query("SELECT SUM(totalVolume) FROM WorkoutRecord")
     fun totalVolume(): Int
-
-    @Query("SELECT * FROM ExerciseRecord WHERE name = :name ORDER BY date ASC")
-    fun progressTrainy(name: String):List<ExerciseRecord>
+//
+//    @Query("SELECT * FROM ExerciseRecord WHERE name = :name ORDER BY date ASC")
+//    fun progressTrainy(name: String):List<ExerciseRecord>
 
 
     @Insert

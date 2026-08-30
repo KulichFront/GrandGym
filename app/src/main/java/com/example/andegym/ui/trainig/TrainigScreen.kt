@@ -58,8 +58,8 @@ fun TrainingScreen(viewModel: TrainingViewModel=viewModel(),
     val isRunning by viewModel.isRunning.collectAsState()
     val timer by viewModel.time.collectAsState()
     val weight by viewModel.weight.collectAsState()
-//    val app = LocalContext.current.applicationContext as App
-//    val repository=app.repository
+    val app = LocalContext.current.applicationContext as App
+    val repository=app.repository
     val currentExercise by viewModel.currentExercise.collectAsState()
     val isWorkoutFinished by viewModel.isWorkoutFinished.collectAsState()
     Column(

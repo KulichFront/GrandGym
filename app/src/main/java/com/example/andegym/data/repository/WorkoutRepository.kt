@@ -26,8 +26,8 @@ class WorkoutRepository(private  val dao: WorkoutDao) {
     fun totalVolume():Int {
         return dao.totalVolume()
     }
-
-    fun progressTrainy(name: String):List<ExerciseRecord>{
-        return dao.progressTrainy(name)
-    }
+//
+//    fun progressTrainy(name: String):List<ExerciseRecord>{
+//        return dao.progressTrainy(name)
+//    }
 }

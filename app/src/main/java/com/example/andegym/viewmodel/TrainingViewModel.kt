@@ -8,6 +8,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.andegym.App
 import com.example.andegym.data.AchievementManager
 import com.example.andegym.data.UserProgressManager
+import com.example.andegym.data.local.ExerciseRecord
+import com.example.andegym.data.local.WorkoutRecord
 import com.example.andegym.data.model.ExercisePlan
 import com.example.andegym.data.parser.TrainingPlanParser
 import kotlinx.coroutines.delay
@@ -21,6 +23,7 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
 
     val app=application as App
     val dataStore=app.dataStore
+    val repository = app.repository
     val userProgressManager= UserProgressManager(dataStore)
     val achiementManager= AchievementManager(dataStore,userProgressManager)
     private val _isRunning= MutableStateFlow(false)
@@ -119,6 +122,7 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
         if(_currentIndex.value+1>=_todayPlan.value.size){
             _isWorkoutFinished.value=true
             viewModelScope.launch {
+                saveWorkout()
                 userProgressManager.completeWorkout()
                 userProgressManager.incrementWorkoutCount()
                 achiementManager.checkFirstWorkout()
@@ -131,5 +135,28 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
         else{
             startRest()
         }
+    }
+
+    fun saveWorkout(){
+        val exercises = _todayPlan.value.map { exercise ->
+        ExerciseRecord(
+            workoutId = 0,
+            name = exercise.name,
+            weight = _weight.value,
+            reps = exercise.reps,
+            sets = exercise.sets
+        )
+    }
+
+        val totalVolume = _todayPlan.value.sumOf { exercise ->
+            (_weight.value * exercise.reps * exercise.sets).toInt()
+        }
+        val workout= WorkoutRecord(
+            date = System.currentTimeMillis(),
+            totalVolume = totalVolume,
+            difficulty = "средне"
+        )
+        repository.addWorkout(workout)
+        repository.addExercises(exercises)
     }
 }

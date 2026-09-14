@@ -6,24 +6,24 @@ import com.example.andegym.data.local.WorkoutRecord
 
 class WorkoutRepository(private  val dao: WorkoutDao) {
 
-    fun addWorkout(work: WorkoutRecord){
+    suspend fun addWorkout(work: WorkoutRecord){
         dao.addWorkout(  work)
     }
 
-    fun addExercises(exercise: List<ExerciseRecord>){
+    suspend fun addExercises(exercise: List<ExerciseRecord>){
         dao.addExersises(exercise)
     }
 
-    fun getLastGym(): WorkoutRecord{
+    suspend fun getLastGym(): WorkoutRecord{
         return dao.lastGym()
 
     }
 
-    fun countsGum():Int{
+    suspend fun countsGum():Int{
         return dao.countGym()
     }
 
-    fun totalVolume():Int {
+    suspend fun totalVolume():Int {
         return dao.totalVolume()
     }
 //

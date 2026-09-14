@@ -119,13 +119,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
-
-
-
-
-
-
 @Composable
 fun TopBarFriends(){
     Row(verticalAlignment = Alignment.CenterVertically,modifier=Modifier

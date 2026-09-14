@@ -1,0 +1,75 @@
+package com.example.andegym.data
+
+import android.content.Context
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+class Achievement(context: Context, private val userProgress: UserProgress){
+
+    private  val achievement_prefs=context.getSharedPreferences("achievement_prefs",Context.MODE_PRIVATE)
+    companion object {
+        val ACH_FIRST_WORKOUT = "ach_first_workout"
+        val ACH_EARLY_BIRD = "ach_early_bird"
+        val ACH_THREE_WORKOUTS ="ach_three_workout"
+        val ACH_HEAVY_LIFTER = "ach_heavy_lifter"
+        val ACH_TEN_WORKOUTS = "ach_ten_workout"
+    }
+
+    val _firstWorkoutFlow= MutableStateFlow(achievement_prefs.getBoolean(ACH_FIRST_WORKOUT,false))
+    val firstWorkoutFlow: StateFlow<Boolean> =_firstWorkoutFlow
+
+    val _threeWorkoutFlow=MutableStateFlow(achievement_prefs.getBoolean(ACH_THREE_WORKOUTS,false))
+    val threeWorkoutFlow: StateFlow<Boolean> = _threeWorkoutFlow
+
+    val _tenWorkoutFlow= MutableStateFlow(achievement_prefs.getBoolean(ACH_TEN_WORKOUTS,false))
+    val tenWorkoutFlow: StateFlow<Boolean> =_tenWorkoutFlow
+
+    val _earlyBirdFlow=MutableStateFlow(achievement_prefs.getBoolean(ACH_EARLY_BIRD,false))
+    val earlyBirdFlow :StateFlow<Boolean> =_earlyBirdFlow
+
+    val _heavyLifter=MutableStateFlow(achievement_prefs.getBoolean(ACH_HEAVY_LIFTER,false))
+    val heavyLifter: StateFlow<Boolean> =_heavyLifter
+
+
+     fun  grandAchievement(key: String){
+        if(!achievement_prefs.getBoolean(key,false)){
+            achievement_prefs.edit().putBoolean(key,true).apply()
+            userProgress.addXp(100)
+            when(key){
+                ACH_FIRST_WORKOUT->_firstWorkoutFlow.value=true
+                ACH_THREE_WORKOUTS->_threeWorkoutFlow.value=true
+                ACH_TEN_WORKOUTS->_tenWorkoutFlow.value=true
+                ACH_EARLY_BIRD->_earlyBirdFlow.value=true
+                ACH_HEAVY_LIFTER->_heavyLifter.value=true
+            }
+        }
+    }
+
+     fun checkFirstWorkout(){
+        if(userProgress.getWorkoutCount()>=1){
+            grandAchievement(Achievement.Companion.ACH_FIRST_WORKOUT)
+        }
+    }
+
+     fun checkThreeWorkout(){
+        if(userProgress.getWorkoutCount()>=3){
+            grandAchievement(Achievement.Companion.ACH_THREE_WORKOUTS)
+        }
+    }
+
+   fun checkTenWorkout(){
+        if(userProgress.getWorkoutCount()>=10){
+            grandAchievement(Achievement.Companion.ACH_TEN_WORKOUTS)
+        }
+    }
+
+    fun checkHeavyLifter(weight:Float){
+        TODO()
+    }
+
+     fun checkEarlyBird(hour:Int){
+        if(hour<=9 ){
+            grandAchievement(Achievement.Companion.ACH_EARLY_BIRD)
+        }
+    }
+
+}

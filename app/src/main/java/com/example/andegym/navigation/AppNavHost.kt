@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.andegym.FriendsListScreen
 
 import com.example.andegym.Onboarding
+import com.example.andegym.ui.auth.LoginScreen
 
 import com.example.andegym.ui.dashboard.HomeScreen
 import com.example.andegym.ui.profile.ProfileScreen
@@ -19,9 +20,14 @@ fun AppNavHost(
 ){
     NavHost(
         navController = navHostController,
-        startDestination = Destination.Start.route,
+        startDestination = Destination.Auth.route,
     ){
 
+        composable(route= Destination.Auth.route){
+            LoginScreen( onAuthSuccess = {
+                navHostController.navigate(Destination.Start.route)
+            })
+        }
 
         composable (route= Destination.Start.route){
             Onboarding(onNextClick={

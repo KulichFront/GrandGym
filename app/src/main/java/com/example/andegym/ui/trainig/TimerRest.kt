@@ -23,7 +23,7 @@ fun TimerRest(timer: Long){
     ){
         Spacer(Modifier.height(12.dp))
         Text(
-            text="Отдых",
+            text="Отдых между подходами 3 минуты",
             fontFamily = FontFamily(Font(R.font.manrope_regular)),
             fontSize = 14.sp,
             color=Color(0xFFFF6B6B)

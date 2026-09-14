@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,7 +95,7 @@ fun TrainingScreen(viewModel: TrainingViewModel=viewModel(),
                     fontFamily = FontFamily(Font(R.font.jura_bold)),
                     fontSize = 40.sp,
                     color=Color(0xFFE0E0E0),
-
+                    textAlign = TextAlign.Center
                     )
             }
         }
@@ -185,7 +186,7 @@ fun ButtonGym(isRunning: Boolean,
                 Text(
                     text="ПАУЗА",
                     fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color=Color(0xFFE0E0E0)
                 )
             }
@@ -209,7 +210,7 @@ fun ButtonGym(isRunning: Boolean,
                 Text(
                     text="ПРОДОЛЖИТЬ",
                     fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color=Color(0xFFE0E0E0)
                 )
             }
@@ -234,7 +235,7 @@ fun ButtonGym(isRunning: Boolean,
                 Text(
                     text="ЗАВЕРШИТЬ",
                     fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color=Color.White
                 )
             }

@@ -17,7 +17,5 @@ class App: Application(){
     val repository by lazy{
         WorkoutRepository(dao)
     }
-    val dataStore by lazy{
-        userProgressDataStore
-}
+
 }

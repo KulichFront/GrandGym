@@ -2,12 +2,10 @@ package com.example.andegym.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.andegym.App
-import com.example.andegym.data.AchievementManager
-import com.example.andegym.data.UserProgressManager
+import com.example.andegym.data.Achievement
+import com.example.andegym.data.UserProgress
 import com.example.andegym.data.local.ExerciseRecord
 import com.example.andegym.data.local.WorkoutRecord
 import com.example.andegym.data.model.ExercisePlan
@@ -15,6 +13,7 @@ import com.example.andegym.data.parser.TrainingPlanParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -22,14 +21,14 @@ import java.time.LocalTime
 class TrainingViewModel(application: Application): AndroidViewModel(application){
 
     val app=application as App
-    val dataStore=app.dataStore
+
     val repository = app.repository
-    val userProgressManager= UserProgressManager(dataStore)
-    val achiementManager= AchievementManager(dataStore,userProgressManager)
+    val userProgress= UserProgress(application)
+    val achiement= Achievement(application, userProgress)
     private val _isRunning= MutableStateFlow(false)
     val isRunning: StateFlow<Boolean> = _isRunning
 
-    private val _time =MutableStateFlow(180L)
+    private val _time =MutableStateFlow(3L)
     val time: StateFlow< Long> =_time
 
     private val _weight=MutableStateFlow(50F)
@@ -75,7 +74,7 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
 
     fun onFinishedRest(){
         _isRunning.value=false
-        _time.value=180
+        _time.value=3L
         nextExercise()
     }
 
@@ -123,12 +122,14 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
             _isWorkoutFinished.value=true
             viewModelScope.launch {
                 saveWorkout()
-                userProgressManager.completeWorkout()
-                userProgressManager.incrementWorkoutCount()
-                achiementManager.checkFirstWorkout()
-                achiementManager.checkThreeWorkout()
-                achiementManager.checkTenWorkout()
-                achiementManager.checkEarlyBird(LocalTime.now().hour)
+
+                userProgress.completeWorkout()
+
+
+                achiement.checkFirstWorkout()
+                achiement.checkThreeWorkout()
+                achiement.checkTenWorkout()
+                achiement.checkEarlyBird(LocalTime.now().hour)
 
             }
         }
@@ -137,7 +138,7 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
-    fun saveWorkout(){
+    suspend fun saveWorkout(){
         val exercises = _todayPlan.value.map { exercise ->
         ExerciseRecord(
             workoutId = 0,

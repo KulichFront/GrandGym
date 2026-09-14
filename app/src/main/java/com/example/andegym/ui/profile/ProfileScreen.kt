@@ -57,13 +57,16 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
                   friendsListClick:()->Unit,
                   profileClick:()->Unit,
 ){
+    val nickname by viewModel.nickname.collectAsState()
     val xp by viewModel.xpFlow.collectAsState(initial = 0)
     val level = viewModel.getlevel(xp)
+    val workoutCount by viewModel.workoutCount.collectAsState()
+    val totalVolume by viewModel.totalVolume.collectAsState()
     val firstWorkoutFlow by viewModel.firstWorkoutFlow.collectAsState(initial = false)
     val threeWorkoutFlow by viewModel.threeWorkoutFlow.collectAsState(initial = false)
     val tenWorkoutFlow by viewModel.tenWorkoutFlow.collectAsState(initial = false)
     val earlyBirdFlow by viewModel.earlyBirdFlow.collectAsState(initial = false)
-    val heavyLifterFlow by viewModel.heavyLifterFlow.collectAsState(initial = false)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,16 +82,16 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
         ){
 
             TopBarProfile()
-            ProfileAvatar()
+            ProfileAvatar(nickname=nickname)
             ScaleOfXP(xp,level)
             Achievements(
                 firstWorkout=firstWorkoutFlow,
                 threeWorkout=threeWorkoutFlow,
                 tenWorkout = tenWorkoutFlow,
                 earlyBird=earlyBirdFlow,
-                heavyLifter = heavyLifterFlow
+                heavyLifter = false
             )
-            Statictics()
+            Statictics(workoutCount = workoutCount, totalVolume = totalVolume)
             Settings()
         }
 
@@ -126,7 +129,7 @@ fun TopBarProfile(){
 
 
 @Composable
-fun ProfileAvatar(){
+fun ProfileAvatar(nickname: String){
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
         Box(
             modifier = Modifier
@@ -145,7 +148,7 @@ fun ProfileAvatar(){
     Spacer(Modifier.height(12.dp))
 
     Text(
-        text="Ваня",
+        text=nickname,
         fontFamily = FontFamily(Font(R.font.manrope_semibold)),
         fontSize = 18.sp,
         color=Color(0xFFE0E0E0),
@@ -321,7 +324,7 @@ fun Achievements(firstWorkout: Boolean,
 
 
 @Composable
-fun Statictics(){
+fun Statictics(workoutCount: Int, totalVolume: Int){
     Box(modifier=Modifier
         .fillMaxWidth()
         .padding(start = 16.dp, end = 16.dp, top = 16.dp)){
@@ -347,19 +350,19 @@ fun Statictics(){
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)){
                     Text(
-                        text="Всего тренировок: 47",
+                        text="Всего тренировок: "+workoutCount,
                         fontFamily = FontFamily(Font(R.font.manrope_regular)),
                         fontSize = 13.sp,
                         color=Color(0xFFA0A0A0)
                     )
                     Text(
-                        text="Часов в зале: 32",
+                        text="Часов в зале: "+(workoutCount * 1.5).toInt(),
                         fontFamily = FontFamily(Font(R.font.manrope_regular)),
                         fontSize = 13.sp,
                         color=Color(0xFFA0A0A0)
                     )
                     Text(
-                        text="Общий объём: 127 500кг",
+                        text="Общий объём: "+totalVolume,
                         fontFamily = FontFamily(Font(R.font.manrope_regular)),
                         fontSize = 13.sp,
                         color=Color(0xFFA0A0A0)

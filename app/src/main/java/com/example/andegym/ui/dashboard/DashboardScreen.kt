@@ -84,7 +84,7 @@ fun TopBarHome(){
 
 
 @Composable
-fun Hello(){
+fun Hello(nickname: String){
     Row(
 
         Modifier
@@ -95,7 +95,7 @@ fun Hello(){
     ){
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                text="С возвращением, Ваня",
+                text="С возвращением, "+nickname,
                 fontSize = 14.sp,
                 color = Color(0xFFA0A0A0)
             )
@@ -205,6 +205,7 @@ fun HomeScreen(viewModel: DashboardViewModel = viewModel(),
                friendsListClick:()->Unit,
                profileClick:()->Unit,
 ) {
+    val nickname by viewModel.nickname.collectAsState()
     val plan by viewModel.todayPlan.collectAsState()
     Column(
         modifier = Modifier
@@ -221,7 +222,7 @@ fun HomeScreen(viewModel: DashboardViewModel = viewModel(),
                 .verticalScroll(rememberScrollState())
         ){
             TopBarHome()
-            Hello()
+            Hello(nickname=nickname)
             HowReady()
             StartGym(startGymClick)
             Exercises(plan)

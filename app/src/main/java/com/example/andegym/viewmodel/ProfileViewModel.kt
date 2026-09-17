@@ -36,7 +36,7 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
     val tenWorkoutFlow=achievementManager.tenWorkoutFlow
     val earlyBirdFlow=achievementManager.earlyBirdFlow
 
-
+    val heavyLifter=achievementManager.heavyLifter
 
     init{
         val uid= FirebaseAuth.getInstance().currentUser?.uid
@@ -54,11 +54,7 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
             _workoutCount.value = app.repository.countsGum()
             _totalVolume.value = app.repository.totalVolume()
         }
-        viewModelScope.launch {
-            progressUser.xpFlow.collect { xp ->
-                println("XP FLOW IN PROFILE: $xp")
-            }
-        }
+
 
     }
 }

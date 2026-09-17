@@ -1,7 +1,10 @@
 package com.example.andegym.ui.profile
 
+import android.app.AlertDialog
+import android.media.tv.AdRequest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,25 +33,35 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Watch
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.andegym.App
 import com.example.andegym.R
+import com.example.andegym.data.model.AchievementInfo
 
 import com.example.andegym.ui.components.BottomNavigation
+import com.example.andegym.ui.theme.AndeGymTheme
 import com.example.andegym.viewmodel.ProfileViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
@@ -66,6 +79,13 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
     val threeWorkoutFlow by viewModel.threeWorkoutFlow.collectAsState(initial = false)
     val tenWorkoutFlow by viewModel.tenWorkoutFlow.collectAsState(initial = false)
     val earlyBirdFlow by viewModel.earlyBirdFlow.collectAsState(initial = false)
+    val heavyLifter by viewModel.heavyLifter.collectAsState(initial = false)
+
+
+
+    var selectedAchievement by remember { mutableStateOf<AchievementInfo?>(null) }
+
+
 
     Column(
         modifier = Modifier
@@ -89,11 +109,27 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
                 threeWorkout=threeWorkoutFlow,
                 tenWorkout = tenWorkoutFlow,
                 earlyBird=earlyBirdFlow,
-                heavyLifter = false
+                heavyLifter = heavyLifter,
+                onAchievementClick = {achievement->
+                    selectedAchievement=achievement
+                }
             )
             Statictics(workoutCount = workoutCount, totalVolume = totalVolume)
             Settings()
+            if(selectedAchievement!=null){
+                AlertDialog(
+                    onDismissRequest = {selectedAchievement=null},
+                    title={Text(selectedAchievement!!.name)},
+                    text = { Text(selectedAchievement!!.description) },
+                    confirmButton = {
+                        TextButton(onClick = { selectedAchievement = null }) {
+                            Text("OK")
+                        }
+                    }
+                )
         }
+        }
+
 
         BottomNavigation(homeClick,gymClick,friendsListClick,profileClick)
 
@@ -197,7 +233,9 @@ fun Achievements(firstWorkout: Boolean,
                  threeWorkout: Boolean,
                  tenWorkout: Boolean,
                  earlyBird: Boolean,
-                 heavyLifter: Boolean){
+                 heavyLifter: Boolean,
+                 onAchievementClick:(AchievementInfo)->Unit
+){
     Box(Modifier
         .fillMaxWidth()
         .padding(start = 16.dp, end = 16.dp, top = 24.dp)){
@@ -227,7 +265,8 @@ fun Achievements(firstWorkout: Boolean,
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly){
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f)) {
+                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
+                                    AchievementInfo("Первая кровь", "Выполни первую тренировку", firstWorkout)) }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(firstWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -243,7 +282,8 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f)) {
+                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
+                                    AchievementInfo("Ты всё ещё здесь?","Выполни 3 тренировки",threeWorkout)) }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(threeWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -259,7 +299,9 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f)) {
+                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
+                                    AchievementInfo("Жаворонок","Потренируйся раньше 9 утра",earlyBird)
+                                )}) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(earlyBird) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -278,7 +320,10 @@ fun Achievements(firstWorkout: Boolean,
                         Spacer(Modifier.height(8.dp))
                         Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly){
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f)) {
+                                modifier=Modifier.weight(1f).clickable{
+                                    onAchievementClick(AchievementInfo
+                                        ("Мешок картошки","Подними 100 кг",heavyLifter))
+                                }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(heavyLifter) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -294,7 +339,9 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f)) {
+                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
+                                    AchievementInfo("Батя в зале","Сходи на 10 тренировок",tenWorkout)
+                                )}) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(tenWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -399,7 +446,8 @@ fun Settings(){
                         color=Color(0xFFE0E0E0)
                     )
                 }
-                Column(modifier=Modifier.padding(top=12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(modifier=Modifier.padding(top=12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row( modifier = Modifier
                         .fillMaxWidth()
                         .height(24.dp),
@@ -504,5 +552,17 @@ fun Settings(){
                 }
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true,showSystemUi = true, device = Devices.PIXEL_6)
+@Composable
+fun ProfilePreview(){
+    AndeGymTheme{
+        ProfileScreen(homeClick = {},
+            gymClick = {},
+            friendsListClick = {},
+            profileClick = {})
     }
 }

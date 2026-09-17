@@ -4,12 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.andegym.FriendsListScreen
-
 import com.example.andegym.Onboarding
 import com.example.andegym.ui.auth.LoginScreen
-
 import com.example.andegym.ui.dashboard.HomeScreen
+import com.example.andegym.ui.friends.FriendsListScreen
 import com.example.andegym.ui.profile.ProfileScreen
 import com.example.andegym.ui.trainig.TrainingScreen
 

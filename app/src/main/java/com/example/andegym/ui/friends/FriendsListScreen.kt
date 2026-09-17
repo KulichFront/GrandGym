@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -27,12 +29,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,19 +43,29 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.andegym.R
-
+import com.example.andegym.data.model.User
 import com.example.andegym.ui.components.BottomNavigation
 import com.example.andegym.ui.theme.AndeGymTheme
+import com.example.andegym.viewmodel.FriendsViewModel
 
 @Composable
 fun FriendsListScreen(
+    viewModel: FriendsViewModel= viewModel(),
     homeClick:()->Unit,
     gymClick:()->Unit,
     friendsListClick:()->Unit,
     profileClick:()->Unit,
 ){
+    val searchText by viewModel.searchText.collectAsState()
+    val searchResult by viewModel.searchResult.collectAsState()
+    val searchError by viewModel.searchError.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val friends by viewModel.friends.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.loadFriends()
+    }
 
     Column(
         modifier = Modifier
@@ -72,10 +82,39 @@ fun FriendsListScreen(
         ){
 
             TopBarFriends()
-            SearchFriend()
-            FriendsList()
+            SearchFriend(
+                searchText=searchText,
+                onSearchTextChange = {it -> viewModel.updateSearchText(it)},
+                onSearchClick = {viewModel.searchUser()})
+            if(isLoading){
+                Text(
+                    text="Ищем друга",
+                    fontSize = 24.sp,
+
+                )
+            }
+            else if(searchResult!=null){
+               searchResultCard(
+                   user=searchResult!!,
+                   onAddClick =
+                       {
+                           viewModel.addFriend(searchResult!!.userId)
+                           viewModel.clearSearch()}
+               )
+
+            }
+            else if(searchError!=null){
+                Text(
+                    text = searchError!!,
+                    color = Color(0xFFFF6B6B),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            FriendsList(friends)
             Spacer(Modifier.height(50.dp))
             AddFriend()
+
 
         }
 
@@ -111,8 +150,12 @@ fun TopBarFriends(){
 }
 
 @Composable
-fun SearchFriend(){
-    var searchText by remember{ mutableStateOf("") }
+fun SearchFriend(
+    searchText:String,
+    onSearchTextChange:(String)->Unit,
+    onSearchClick:()->Unit
+){
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -130,7 +173,7 @@ fun SearchFriend(){
         Spacer(Modifier.width(8.dp))
         BasicTextField(
             value =searchText ,
-            onValueChange = {searchText=it},
+            onValueChange = onSearchTextChange,
             decorationBox = { innerTextField ->
                 if (searchText.isEmpty()) {
                     Text("Поиск по нику...", color = Color(0xFFA0A0A0), fontSize = 14.sp)
@@ -145,190 +188,27 @@ fun SearchFriend(){
             modifier= Modifier.weight(2.5f)
 
         )
-        Button(onClick = {}, modifier = Modifier.weight(1f)){
+        Button(onClick = onSearchClick, modifier = Modifier.weight(1f)){
             Text("Найти")
         }
     }
 }
 
 @Composable
-fun FriendsList() {
-    Box(
-        modifier=Modifier
-
-            .fillMaxWidth()
-            .padding(top = 12.dp, start = 16.dp, end = 16.dp)
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
-    ){
-        Row(modifier=Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically)
-        {
-            Box( contentAlignment = Alignment.Center,  modifier = Modifier
-                .size(48.dp)
-                .background(Color(0xFF3A3A3A), RoundedCornerShape(8.dp)))
-            {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    tint=Color(0xFFE0E0E0),
-                    contentDescription = "Friend",
-                    modifier = Modifier.size(32.dp)
-                )
+fun FriendsList(friends:List<User>) {
+    if (friends.isEmpty()) {
+        Text(
+            text = "У тебя пока что нет друзей",
+            fontSize = 20.sp
+        )
+    } else {
+        LazyColumn() {
+            items(friends) { friend ->
+                friendCard(friend)
             }
-            Spacer(Modifier.width(12.dp))
-            Column(){
-                Text(
-                    text="Дима",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 16.sp,
-                    color=Color(0xFFE0E0E0)
-                )
-                Text(
-                    text="Тренировок:42",
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 12.sp,
-                    color=Color(0xFFA0A0A0)
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text="ур.5",
-                fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                fontSize = 14.sp,
-                color=Color(0xFF6C5CE7)
-            )
         }
-    }
-    Box(
-        modifier=Modifier
 
-            .fillMaxWidth()
-            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
-    ){
-        Row(modifier=Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically)
-        {
-            Box( contentAlignment = Alignment.Center,  modifier = Modifier
-                .size(48.dp)
-                .background(Color(0xFF3A3A3A), RoundedCornerShape(8.dp)))
-            {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    tint=Color(0xFFE0E0E0),
-                    contentDescription = "Friend",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(){
-                Text(
-                    text="Лена",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 16.sp,
-                    color=Color(0xFFE0E0E0)
-                )
-                Text(
-                    text="Тренировок:58",
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 12.sp,
-                    color=Color(0xFFA0A0A0)
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text="ур.7",
-                fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                fontSize = 14.sp,
-                color=Color(0xFF6C5CE7)
-            )
-        }
-    }
-    Box(
-        modifier=Modifier
 
-            .fillMaxWidth()
-            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
-    ){
-        Row(modifier=Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically)
-        {
-            Box( contentAlignment = Alignment.Center,  modifier = Modifier
-                .size(48.dp)
-                .background(Color(0xFF3A3A3A), RoundedCornerShape(8.dp)))
-            {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    tint=Color(0xFFE0E0E0),
-                    contentDescription = "Friend",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(){
-                Text(
-                    text="Саша",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 16.sp,
-                    color=Color(0xFFE0E0E0)
-                )
-                Text(
-                    text="Тренировок:12",
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 12.sp,
-                    color=Color(0xFFA0A0A0)
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text="ур.3",
-                fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                fontSize = 14.sp,
-                color=Color(0xFF6C5CE7)
-            )
-        }
-    }
-
-    Box(
-        modifier=Modifier
-
-            .fillMaxWidth()
-            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
-    ){
-        Row(modifier=Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically)
-        {
-            Box( contentAlignment = Alignment.Center,  modifier = Modifier
-                .size(48.dp)
-                .background(Color(0xFF3A3A3A), RoundedCornerShape(8.dp)))
-            {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    tint=Color(0xFFE0E0E0),
-                    contentDescription = "Friend",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(){
-                Text(
-                    text="Катя",
-                    fontFamily = FontFamily(Font(R.font.manrope_semibold)),
-                    fontSize = 16.sp,
-                    color=Color(0xFFE0E0E0)
-                )
-                Text(
-                    text="Тренировок:35",
-                    fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                    fontSize = 12.sp,
-                    color=Color(0xFFA0A0A0)
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text="ур.6",
-                fontFamily = FontFamily(Font(R.font.manrope_regular)),
-                fontSize = 14.sp,
-                color=Color(0xFF6C5CE7)
-            )
-        }
     }
 }
 
@@ -346,12 +226,12 @@ fun AddFriend(){
             Icon(
                 imageVector = Icons.Default.PersonAdd,
                 tint=Color.White,
-                contentDescription = "AddFriend",
+                contentDescription = "RequestToMe",
                 modifier=Modifier.size(20.dp)
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text="Добавить друга",
+                text="Запросы в друзья",
                 fontFamily = FontFamily(Font(R.font.manrope_semibold)),
                 fontSize = 14.sp,
                 color=Color.White

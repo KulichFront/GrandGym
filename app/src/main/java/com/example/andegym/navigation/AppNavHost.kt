@@ -9,6 +9,7 @@ import com.example.andegym.ui.auth.LoginScreen
 import com.example.andegym.ui.dashboard.HomeScreen
 import com.example.andegym.ui.friends.FriendsListScreen
 import com.example.andegym.ui.profile.ProfileScreen
+import com.example.andegym.ui.requests.requestsScreen
 import com.example.andegym.ui.trainig.TrainingScreen
 
 @Composable
@@ -68,6 +69,17 @@ fun AppNavHost(
                  friendsListClick = {navHostController.navigate(Destination.Friends.route)},
                  profileClick ={navHostController.navigate(Destination.Me.route)}
              )
+        }
+
+        composable(route=Destination.Request.route){
+            requestsScreen (
+
+                homeClick = {navHostController.navigate(Destination.Home.route)},
+                gymClick = {navHostController.navigate(Destination.Gym.route)},
+                friendsListClick = {navHostController.navigate(Destination.Friends.route)},
+                profileClick ={navHostController.navigate(Destination.Me.route)},
+                onBackClick={navHostController.popBackStack()}
+            )
         }
 
     }

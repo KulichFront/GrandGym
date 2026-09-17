@@ -22,6 +22,12 @@ class FriendsViewModel(): ViewModel() {
     val isLoading: StateFlow<Boolean> =_isLoading
     val firestore= FirebaseFirestore.getInstance()
 
+    private val _friends=MutableStateFlow<List<User>>(emptyList())
+    val friends: StateFlow<List<User>> =_friends
+
+    private val _requestsFlow=MutableStateFlow<List<User>>(emptyList())
+    val requestsFlow: StateFlow<List<User>> =_requestsFlow
+
     fun updateSearchText(text:String){
         _searchText.value=text
     }
@@ -80,6 +86,122 @@ class FriendsViewModel(): ViewModel() {
         }
     }
 
+    fun loadFriends(){
+        val myId= FirebaseAuth.getInstance().currentUser?.uid
+        if(myId!=null){
+            val resultList=mutableListOf<User>()
+            firestore.collection("users").document(myId).get().addOnSuccessListener {document ->
 
+                val friendsList=document.get("friends") as? List<String> ?: emptyList()
+                if(!friendsList.isEmpty()){
+                    val totalCount=friendsList.size
+                    var currentCount=0
+                    friendsList.forEach { uid->
+                        firestore.collection("users").document(uid).get().addOnSuccessListener { frienddoc->
+                            val user=User(
+                                frienddoc.id,
+                                frienddoc.getString("nickname")?: "",
+                                frienddoc.getLong("level")?.toInt()?: 0,
+                                frienddoc.getLong("xp")?.toInt() ?: 0
+
+
+                            )
+                            resultList.add(user)
+                            currentCount++
+                            if(totalCount==currentCount){
+                                _friends.value=resultList
+                            }
+                        }
+
+                    }
+
+                }
+                else{
+                    _friends.value=emptyList()
+                }
+            }
+        }
+
+    }
+    fun loadRequest(){
+        val myId= FirebaseAuth.getInstance().currentUser?.uid
+        if(myId!=null){
+            val resultList=mutableListOf<User>()
+
+            firestore.collection("friend_requests")
+                .whereEqualTo("to",myId)
+                .whereEqualTo("status","pending")
+                .get()
+                .addOnSuccessListener { document ->
+                    if(document.isEmpty()){
+                        _requestsFlow.value=emptyList()
+                    }
+                    else{
+                        var currentCount=0
+                        val totalCount=document.documents.size
+                        document.documents.forEach {doc ->
+                            val fromId=doc.getString("from") ?: return@forEach
+                            firestore.collection("users").document(fromId).get().addOnSuccessListener { doc->
+                                val user=User(
+                                    doc.id,
+                                    doc.getString("nickname")?:"",
+                                    doc.getLong("level")?.toInt() ?:0,
+                                    doc.getLong("xp")?.toInt() ?:0
+                                )
+                                resultList.add(user)
+                                currentCount++
+                                if(currentCount==totalCount){
+                                    _requestsFlow.value=resultList
+                                }
+
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    fun declineRequest(uId: String){
+        val myId= FirebaseAuth.getInstance().currentUser?.uid
+        if (myId != null) {
+            firestore.collection("friend_requests")
+                .whereEqualTo("to", myId)
+                .whereEqualTo("from", uId)
+                .whereEqualTo("status", "pending")
+                .get()
+                .addOnSuccessListener { result ->
+                    val resultDoc = result.documents.firstOrNull()
+                    resultDoc?.reference?.update("status", "declined")
+                }
+        }
+
+    }
+    fun acceptRequest(uid: String){
+        val myId=FirebaseAuth.getInstance().currentUser?.uid
+        if(myId!=null){
+            firestore.collection("users").document(myId).get().addOnSuccessListener {
+                doc->
+                val myFriends=doc.get("friends") as? List<String> ?: emptyList()
+                val newFriends=myFriends+uid
+                firestore.collection("users").document(myId)
+                    .update("friends",newFriends)
+            }
+            firestore.collection("users").document(uid).get().addOnSuccessListener { doc->
+                val youFriends=doc.get("friends") as? List<String> ?: emptyList()
+                val newYouFriends=youFriends+myId
+                firestore.collection("users").document(uid)
+                    .update("friends",newYouFriends)
+            }
+            firestore.collection("friend_requests")
+                .whereEqualTo("to", myId)
+                .whereEqualTo("from", uid)
+                .whereEqualTo("status", "pending")
+                .get()
+                .addOnSuccessListener { result ->
+                    val resultDoc = result.documents.firstOrNull()
+                    resultDoc?.reference?.update("status", "accepted")
+                }
+        }
+    }
 
 }

@@ -8,6 +8,7 @@ sealed class Destination (val route: String){
     data object  Friends: Destination(ROUTE_FRIENDS)
     data object  Me: Destination(ROUTE_ME)
     data object  Start: Destination(ROUTE_START)
+    data object  Request: Destination(ROUTE_REQUEST)
 
     companion object{
         private const val ROUTE_AUTH="route_auth"
@@ -17,5 +18,6 @@ sealed class Destination (val route: String){
         private const val ROUTE_ME="route_me"
 
         private  const val  ROUTE_START="route_start"
+        private const val ROUTE_REQUEST="route_request"
     }
 }

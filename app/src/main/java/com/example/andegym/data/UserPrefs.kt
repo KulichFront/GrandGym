@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class UserPrefs(context: Context) {
     private val prefs=context.getSharedPreferences("user_progress",Context.MODE_PRIVATE)
+    val editor=prefs.edit()
 
     companion object{
         const val XP_KEY="xp"
@@ -46,5 +47,9 @@ class UserPrefs(context: Context) {
 
     fun setLastDay(value: String){
         prefs.edit().putString(LAST_DAY_KEY,value).apply()
+    }
+
+    fun clearData(){
+        editor.clear().apply()
     }
 }

@@ -29,12 +29,7 @@ import com.example.andegym.R
 import com.example.andegym.data.model.User
 
 
-val user=User(
-    "",
-    "Антон",
-    1,
-    1
-)
+
 @Composable
 fun searchResultCard(
     user:User,
@@ -85,8 +80,3 @@ fun searchResultCard(
     }
 }
 
-@Preview
-@Composable
-fun dkdskksd(){
-    searchResultCard(user,{})
-}

@@ -175,7 +175,8 @@ fun ProfilePreview(){
         ProfileScreen(homeClick = {},
             gymClick = {},
             friendsListClick = {},
-            profileClick = {})
+            profileClick = {},
+            onLogout = {})
     }
 }
 

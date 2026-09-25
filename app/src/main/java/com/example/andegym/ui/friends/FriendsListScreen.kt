@@ -57,6 +57,8 @@ fun FriendsListScreen(
     gymClick:()->Unit,
     friendsListClick:()->Unit,
     profileClick:()->Unit,
+    onListRequestCLick: () -> Unit,
+    onFriendCLick:(String)->Unit
 ){
     val searchText by viewModel.searchText.collectAsState()
     val searchResult by viewModel.searchResult.collectAsState()
@@ -111,9 +113,9 @@ fun FriendsListScreen(
                     modifier = Modifier.padding(16.dp)
                 )
             }
-            FriendsList(friends)
+            FriendsList(friends,onFriendCLick)
             Spacer(Modifier.height(50.dp))
-            AddFriend()
+            Requests (onListRequestCLick)
 
 
         }
@@ -195,16 +197,19 @@ fun SearchFriend(
 }
 
 @Composable
-fun FriendsList(friends:List<User>) {
+fun FriendsList(friends:List<User>, onFriendClick: (String) -> Unit) {
     if (friends.isEmpty()) {
         Text(
             text = "У тебя пока что нет друзей",
             fontSize = 20.sp
         )
     } else {
-        LazyColumn() {
+        LazyColumn(modifier = Modifier.height(300.dp) ) {
             items(friends) { friend ->
-                friendCard(friend)
+                friendCard(
+                    user=friend,
+                    onClick={onFriendClick(friend.userId)}
+                )
             }
         }
 
@@ -213,8 +218,8 @@ fun FriendsList(friends:List<User>) {
 }
 
 @Composable
-fun AddFriend(){
-    Button(onClick = {}, modifier = Modifier
+fun Requests(onListRequestCLick:()->Unit){
+    Button(onClick = {onListRequestCLick()}, modifier = Modifier
         .height(48.dp)
         .fillMaxWidth()
         .padding(start = 16.dp, end = 16.dp,),colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C5CE7)), shape = RoundedCornerShape(16.dp))
@@ -248,7 +253,9 @@ fun FriendsListPreview(){
         FriendsListScreen(homeClick = {},
             gymClick = {},
             friendsListClick = {},
-            profileClick = {})
+            profileClick = {},
+            onListRequestCLick = {},
+            onFriendCLick = {})
 
     }
 }

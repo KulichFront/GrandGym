@@ -1,6 +1,8 @@
 package com.example.andegym.data
 
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 class Achievement(context: Context, private val userProgress: UserProgress){
@@ -29,6 +31,7 @@ class Achievement(context: Context, private val userProgress: UserProgress){
     val _heavyLifter=MutableStateFlow(achievement_prefs.getBoolean(ACH_HEAVY_LIFTER,false))
     val heavyLifter: StateFlow<Boolean> =_heavyLifter
 
+    private val firestore= FirebaseFirestore.getInstance()
 
      fun  grandAchievement(key: String){
         if(!achievement_prefs.getBoolean(key,false)){
@@ -40,6 +43,12 @@ class Achievement(context: Context, private val userProgress: UserProgress){
                 ACH_TEN_WORKOUTS->_tenWorkoutFlow.value=true
                 ACH_EARLY_BIRD->_earlyBirdFlow.value=true
                 ACH_HEAVY_LIFTER->_heavyLifter.value=true
+            }
+
+            val myId= FirebaseAuth.getInstance().currentUser?.uid
+            if(myId!=null){
+                firestore.collection("users").document(myId)
+                    .update(key,true)
             }
         }
     }
@@ -70,6 +79,10 @@ class Achievement(context: Context, private val userProgress: UserProgress){
         if(hour<=9 ){
             grandAchievement(Achievement.Companion.ACH_EARLY_BIRD)
         }
+    }
+
+    fun clearAchievement(){
+
     }
 
 }

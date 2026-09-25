@@ -28,12 +28,7 @@ import com.example.andegym.R
 import com.example.andegym.data.model.User
 
 
-val user=User(
-    "",
-    "Антон",
-    12,
-    1
-)
+
 @Composable
 fun requestCard(user: User,
                 onAccept:()->Unit,
@@ -104,12 +99,6 @@ fun requestCard(user: User,
 }
 
 
-@Preview
-@Composable
-fun kmadslm(){
-    requestCard (user,
-        onAccept = {},
-        onDecline = {})
-}
+
 
 

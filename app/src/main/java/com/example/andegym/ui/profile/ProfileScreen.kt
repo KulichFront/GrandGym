@@ -1,7 +1,5 @@
 package com.example.andegym.ui.profile
 
-import android.app.AlertDialog
-import android.media.tv.AdRequest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,7 +32,10 @@ import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,14 +55,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.andegym.App
 import com.example.andegym.R
 import com.example.andegym.data.model.AchievementInfo
-
 import com.example.andegym.ui.components.BottomNavigation
 import com.example.andegym.ui.theme.AndeGymTheme
 import com.example.andegym.viewmodel.ProfileViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
@@ -69,6 +70,7 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
                   gymClick:()->Unit,
                   friendsListClick:()->Unit,
                   profileClick:()->Unit,
+                  onLogout: () -> Unit
 ){
     val nickname by viewModel.nickname.collectAsState()
     val xp by viewModel.xpFlow.collectAsState(initial = 0)
@@ -80,12 +82,30 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
     val tenWorkoutFlow by viewModel.tenWorkoutFlow.collectAsState(initial = false)
     val earlyBirdFlow by viewModel.earlyBirdFlow.collectAsState(initial = false)
     val heavyLifter by viewModel.heavyLifter.collectAsState(initial = false)
+    val isPublic by viewModel.isPublic.collectAsState()
 
 
 
     var selectedAchievement by remember { mutableStateOf<AchievementInfo?>(null) }
 
+    val updateData: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+    updateData.put("xp", xp)
+    updateData.put("level", level)
+    updateData.put("totalVolume", totalVolume)
+    updateData.put("workoutCount",workoutCount)
 
+    fun logoutInProfile(){
+        val firestore= FirebaseFirestore.getInstance()
+        val myId= FirebaseAuth.getInstance().currentUser?.uid
+        if(myId!=null){
+            firestore
+                .collection("users")
+                .document(myId)
+                .update(updateData)
+
+        }
+
+    }
 
     Column(
         modifier = Modifier
@@ -115,7 +135,8 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
                 }
             )
             Statictics(workoutCount = workoutCount, totalVolume = totalVolume)
-            Settings()
+            Settings(isPublic=isPublic, onTogglePrivacy = {viewModel.togglePrivacy()})
+            LeaveButton (onLogout=onLogout)
             if(selectedAchievement!=null){
                 AlertDialog(
                     onDismissRequest = {selectedAchievement=null},
@@ -206,7 +227,7 @@ fun ScaleOfXP(xp:Int,level:Int){
             .height(8.dp)
             .background(Color(0xFF2C2C2C), RoundedCornerShape(4.dp))){
             Box(modifier = Modifier
-                .fillMaxWidth((xp%100)/100f)
+                .fillMaxWidth((xp % 100) / 100f)
                 .height(8.dp)
                 .background(Color(0xFF6C5CE7), RoundedCornerShape(4.dp))){
             }
@@ -265,8 +286,17 @@ fun Achievements(firstWorkout: Boolean,
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly){
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
-                                    AchievementInfo("Первая кровь", "Выполни первую тренировку", firstWorkout)) }) {
+                                modifier=Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onAchievementClick(
+                                            AchievementInfo(
+                                                "Первая кровь",
+                                                "Выполни первую тренировку",
+                                                firstWorkout
+                                            )
+                                        )
+                                    }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(firstWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -282,8 +312,17 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
-                                    AchievementInfo("Ты всё ещё здесь?","Выполни 3 тренировки",threeWorkout)) }) {
+                                modifier=Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onAchievementClick(
+                                            AchievementInfo(
+                                                "Ты всё ещё здесь?",
+                                                "Выполни 3 тренировки",
+                                                threeWorkout
+                                            )
+                                        )
+                                    }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(threeWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -299,9 +338,17 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
-                                    AchievementInfo("Жаворонок","Потренируйся раньше 9 утра",earlyBird)
-                                )}) {
+                                modifier=Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onAchievementClick(
+                                            AchievementInfo(
+                                                "Жаворонок",
+                                                "Потренируйся раньше 9 утра",
+                                                earlyBird
+                                            )
+                                        )
+                                    }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(earlyBird) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -320,10 +367,14 @@ fun Achievements(firstWorkout: Boolean,
                         Spacer(Modifier.height(8.dp))
                         Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly){
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f).clickable{
-                                    onAchievementClick(AchievementInfo
-                                        ("Мешок картошки","Подними 100 кг",heavyLifter))
-                                }) {
+                                modifier=Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onAchievementClick(
+                                            AchievementInfo
+                                                ("Мешок картошки", "Подними 100 кг", heavyLifter)
+                                        )
+                                    }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(heavyLifter) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -339,9 +390,17 @@ fun Achievements(firstWorkout: Boolean,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-                                modifier=Modifier.weight(1f).clickable{onAchievementClick(
-                                    AchievementInfo("Батя в зале","Сходи на 10 тренировок",tenWorkout)
-                                )}) {
+                                modifier=Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onAchievementClick(
+                                            AchievementInfo(
+                                                "Батя в зале",
+                                                "Сходи на 10 тренировок",
+                                                tenWorkout
+                                            )
+                                        )
+                                    }) {
                                 Icon(
                                     imageVector = Icons.Default.EmojiEvents,
                                     tint=if(tenWorkout) Color(0xFF6C5CE7) else Color(0xFF3A3A3A),
@@ -422,7 +481,9 @@ fun Statictics(workoutCount: Int, totalVolume: Int){
 }
 
 @Composable
-fun Settings(){
+fun Settings(
+    isPublic: Boolean,
+    onTogglePrivacy:()->Unit){
     Box(Modifier
         .fillMaxWidth()
         .padding(start = 16.dp, top = 16.dp, end = 16.dp)){
@@ -548,6 +609,25 @@ fun Settings(){
                             modifier = Modifier.size(16.dp)
                         )
                     }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text =  if (isPublic) "Показывать профиль всем" else "Профиль скрыт от всех",
+                            fontFamily = FontFamily(Font(R.font.manrope_regular)),
+                            fontSize = 14.sp,
+                            color = Color(0xFFE0E0E0)
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Switch(
+                            checked = isPublic,
+                            onCheckedChange = { onTogglePrivacy() }
+                        )
+                    }
+
 
                 }
             }
@@ -555,6 +635,27 @@ fun Settings(){
     }
 }
 
+@Composable
+fun LeaveButton(onLogout:()->Unit){
+    Button(
+        onClick = {
+
+            onLogout() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(top = 12.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6B6B)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = "ВЫЙТИ",
+            fontFamily = FontFamily(Font(R.font.manrope_semibold)),
+            fontSize = 14.sp,
+            color = Color.White
+        )
+    }
+}
 
 @Preview(showBackground = true,showSystemUi = true, device = Devices.PIXEL_6)
 @Composable
@@ -563,6 +664,7 @@ fun ProfilePreview(){
         ProfileScreen(homeClick = {},
             gymClick = {},
             friendsListClick = {},
-            profileClick = {})
+            profileClick = {},
+            onLogout = {})
     }
 }

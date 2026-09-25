@@ -147,7 +147,7 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
             reps = exercise.reps,
             sets = exercise.sets
         )
-    }
+        }
 
         val totalVolume = _todayPlan.value.sumOf { exercise ->
             (_weight.value * exercise.reps * exercise.sets).toInt()
@@ -159,5 +159,6 @@ class TrainingViewModel(application: Application): AndroidViewModel(application)
         )
         repository.addWorkout(workout)
         repository.addExercises(exercises)
+
     }
 }

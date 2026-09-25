@@ -27,6 +27,7 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
     val totalVolume: StateFlow<Int> = _totalVolume
 
     val xpFlow=progressUser.xpFlow
+
     fun getlevel(xp:Int):Int=progressUser.getlevel(xp)
 
     val achievementManager= Achievement(application, progressUser)
@@ -38,7 +39,24 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
 
     val heavyLifter=achievementManager.heavyLifter
 
+    private val _isPublic = MutableStateFlow(true)
+    val isPublic: StateFlow<Boolean> = _isPublic
+
+    fun togglePrivacy(){
+        val uid= FirebaseAuth.getInstance().currentUser?.uid
+        if(uid!=null){
+            val newValue = !_isPublic.value
+            FirebaseFirestore
+                .getInstance()
+                .collection("users")
+                .document(uid)
+                .update("isPublic",newValue)
+            _isPublic.value = newValue
+        }
+    }
+
     init{
+
         val uid= FirebaseAuth.getInstance().currentUser?.uid
         if(uid!=null){
             FirebaseFirestore.getInstance()
@@ -47,12 +65,16 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
                 .get()
                 .addOnSuccessListener { doc ->
                 _nickname.value = doc.getString("nickname") ?: "Пользователь"
+                    _isPublic.value = doc.getBoolean("isPublic") ?: true
+
+
             }
 
         }
         viewModelScope.launch {
             _workoutCount.value = app.repository.countsGum()
             _totalVolume.value = app.repository.totalVolume()
+
         }
 
 

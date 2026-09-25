@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,6 +22,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,21 +34,25 @@ import androidx.compose.ui.tooling.preview.Devices.PIXEL_6
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.andegym.R
 import com.example.andegym.ui.components.BottomNavigation
-import com.example.andegym.ui.dashboard.Exercises
-import com.example.andegym.ui.dashboard.Hello
-import com.example.andegym.ui.dashboard.HowReady
-import com.example.andegym.ui.dashboard.StartGym
-import com.example.andegym.ui.dashboard.TopBarHome
+import com.example.andegym.viewmodel.FriendsViewModel
+
 
 @Composable
-fun requestsScreen(homeClick:()->Unit,
-                   gymClick:()->Unit,
-                   friendsListClick:()->Unit,
-                   profileClick:()->Unit,
-                   onBackClick: () -> Unit) {
-    Column(
+fun requestsScreen(
+        viewModel: FriendsViewModel=viewModel() ,
+        homeClick:()->Unit,
+        gymClick:()->Unit,
+        friendsListClick:()->Unit,
+        profileClick:()->Unit,
+        onBackClick: () -> Unit) {
+    val requestFlow by viewModel.requestsFlow.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.loadRequest()
+    }
+        Column(
         modifier = Modifier
 
             .fillMaxSize()
@@ -55,9 +64,27 @@ fun requestsScreen(homeClick:()->Unit,
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+
         ) {
             TopBarRequest(onBackClick)
+            if(requestFlow.isEmpty()){
+                Text(
+                    text="У тебя нет входящих запросов",
+                    fontSize = 16.sp,
+                    color = Color(0xFFA0A0A0),
+                    modifier=Modifier.padding(16.dp)
+                )
+            }
+            else{
+                LazyColumn() {
+                    items(requestFlow){
+                        request -> requestCard(
+                        user=request,
+                        onAccept = {viewModel.acceptRequest(request.userId)},
+                        onDecline = {viewModel.declineRequest(request.userId)})
+                    }
+                }
+            }
         }
 
         BottomNavigation(homeClick, gymClick, friendsListClick, profileClick)

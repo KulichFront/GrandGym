@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.TODO
 
 class FriendsViewModel(): ViewModel() {
 
@@ -55,9 +56,13 @@ class FriendsViewModel(): ViewModel() {
                         val xp=document.getLong("xp")?.toInt()
                         val user=User(
                             id,
-                            nick?:"без ника",
-                            level?: 0,
-                            xp?: 0
+                            nick ?: "без ника",
+                            level ?: 0,
+                            xp ?: 0,
+                            document.getBoolean("isPublic") ?: true,
+                            document.getLong("totalVolume")?.toInt() ?: 0,
+                            document.getLong("workoutCount")?.toInt() ?: 0,
+                            document.get("friends") as? List<String> ?: emptyList()
                         )
                         _searchResult.value=user
                         _searchError.value=null
@@ -102,9 +107,11 @@ class FriendsViewModel(): ViewModel() {
                                 frienddoc.id,
                                 frienddoc.getString("nickname")?: "",
                                 frienddoc.getLong("level")?.toInt()?: 0,
-                                frienddoc.getLong("xp")?.toInt() ?: 0
-
-
+                                frienddoc.getLong("xp")?.toInt() ?: 0,
+                                frienddoc.getBoolean("isPublic") ?: true,
+                                frienddoc.getLong("totalVolume")?.toInt() ?: 0,
+                                frienddoc.getLong("workoutCount")?.toInt() ?: 0,
+                                frienddoc.get("friends") as? List<String> ?: emptyList()
                             )
                             resultList.add(user)
                             currentCount++
@@ -146,7 +153,11 @@ class FriendsViewModel(): ViewModel() {
                                     doc.id,
                                     doc.getString("nickname")?:"",
                                     doc.getLong("level")?.toInt() ?:0,
-                                    doc.getLong("xp")?.toInt() ?:0
+                                    doc.getLong("xp")?.toInt() ?:0,
+                                    doc.getBoolean("isPublic") ?: true,
+                                    doc.getLong("totalVolume")?.toInt() ?: 0,
+                                    doc.getLong("workoutCount")?.toInt() ?: 0,
+                                    doc.get("friends") as? List<String> ?: emptyList()
                                 )
                                 resultList.add(user)
                                 currentCount++

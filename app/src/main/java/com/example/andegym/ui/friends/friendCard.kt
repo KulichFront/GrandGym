@@ -1,6 +1,7 @@
 package com.example.andegym.ui.friends
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,14 +29,15 @@ import com.example.andegym.data.model.User
 
 @Composable
 fun friendCard(
-    user: User
+    user: User,
+    onClick:()->Unit
 ){
     Box(
         modifier=Modifier
 
             .fillMaxWidth()
             .padding(top = 12.dp, start = 16.dp, end = 16.dp)
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
+            .background(Color(0xFF2C2C2C), RoundedCornerShape(12.dp)).clickable{onClick()}
     ){
         Row(modifier=Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically)
         {

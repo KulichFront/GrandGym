@@ -136,7 +136,9 @@ fun LoginScreen(
                         "email" to email,
                         "level" to 1,
                         "xp" to 0,
-                        "friends" to emptyList<String>()
+                        "friends" to emptyList<String>(),
+                        "isPublic" to true,
+
                     )
                     firestore.collection("users")
                         .document(userId)

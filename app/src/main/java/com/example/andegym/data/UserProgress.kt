@@ -37,4 +37,7 @@ class UserProgress(context: Context){
     fun getWorkoutCount():Int{
         return userPrefs.getWorkoutCount()
     }
+    fun clearData(){
+        userPrefs.clearData()
+    }
 }

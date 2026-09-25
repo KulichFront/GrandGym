@@ -10,6 +10,10 @@ sealed class Destination (val route: String){
     data object  Start: Destination(ROUTE_START)
     data object  Request: Destination(ROUTE_REQUEST)
 
+    data object Friend: Destination(ROUTE_FRIEND){
+        fun createRoute(uid:String)="friend/$uid"
+    }
+
     companion object{
         private const val ROUTE_AUTH="route_auth"
         private const val ROUTE_HOME="route_home"
@@ -19,5 +23,7 @@ sealed class Destination (val route: String){
 
         private  const val  ROUTE_START="route_start"
         private const val ROUTE_REQUEST="route_request"
+
+        private const val ROUTE_FRIEND="friend/{uid}"
     }
 }

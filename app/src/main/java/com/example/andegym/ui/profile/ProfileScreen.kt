@@ -39,6 +39,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.andegym.App
 import com.example.andegym.R
 import com.example.andegym.data.model.AchievementInfo
 import com.example.andegym.ui.components.BottomNavigation
@@ -72,6 +75,8 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
                   profileClick:()->Unit,
                   onLogout: () -> Unit
 ){
+
+     val app= LocalContext.current.applicationContext as App
     val nickname by viewModel.nickname.collectAsState()
     val xp by viewModel.xpFlow.collectAsState(initial = 0)
     val level = viewModel.getlevel(xp)
@@ -89,24 +94,10 @@ fun ProfileScreen(viewModel: ProfileViewModel= viewModel(),
     var selectedAchievement by remember { mutableStateOf<AchievementInfo?>(null) }
 
     val updateData: MutableMap<String?, Any?> = HashMap<String?, Any?>()
-    updateData.put("xp", xp)
-    updateData.put("level", level)
-    updateData.put("totalVolume", totalVolume)
-    updateData.put("workoutCount",workoutCount)
 
-    fun logoutInProfile(){
-        val firestore= FirebaseFirestore.getInstance()
-        val myId= FirebaseAuth.getInstance().currentUser?.uid
-        if(myId!=null){
-            firestore
-                .collection("users")
-                .document(myId)
-                .update(updateData)
-
-        }
-
+    LaunchedEffect(Unit) {
+        app.pullFromFirestore { }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()

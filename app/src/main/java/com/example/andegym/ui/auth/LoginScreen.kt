@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,6 +41,9 @@ import androidx.compose.ui.tooling.preview.Devices.PIXEL_6
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.andegym.App
+import com.example.andegym.data.model.User
+import com.example.andegym.data.model.toMap
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun LoginScreen(
     onAuthSuccess:()->Unit
 ) {
-
+    val app= LocalContext.current.applicationContext as App
     val auth = FirebaseAuth.getInstance()
     var nickname by remember{mutableStateOf("")}
     var email by remember{ mutableStateOf("") }
@@ -107,7 +111,9 @@ fun LoginScreen(
         Spacer(Modifier.height(32.dp))
         Button(onClick = {
             auth.signInWithEmailAndPassword(email,password)
-                .addOnSuccessListener { onAuthSuccess() }
+                .addOnSuccessListener {
+                    app.pullFromFirestore {  onAuthSuccess() }
+                     }
                 .addOnFailureListener {
                     exception -> errortext="Неверная почта или пароль"
                 }
@@ -131,22 +137,18 @@ fun LoginScreen(
                 .addOnSuccessListener { result ->
 
                     val userId = result.user?.uid ?: return@addOnSuccessListener
-                    val userData=hashMapOf(
-                        "nickname" to nickname,
-                        "email" to email,
-                        "level" to 1,
-                        "xp" to 0,
-                        "friends" to emptyList<String>(),
-                        "isPublic" to true,
-
+                    val fresh= User(
+                        userId = userId,
+                        nickname = nickname,
+                        level = 1,
+                        xp = 0,
+                        isPublic = true,
+                        friends = emptyList()
                     )
-                    firestore.collection("users")
-                        .document(userId)
-                        .set(userData)
-                        .addOnSuccessListener {
-                            onAuthSuccess()
-                        }
+                    firestore.collection("users").document(userId).set(fresh.toMap())
+
                 }
+
                 .addOnFailureListener { exception ->
                     errortext =  exception.message ?: "Ошибка"
                 }

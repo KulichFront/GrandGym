@@ -4,8 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.andegym.App
-import com.example.andegym.data.Achievement
-import com.example.andegym.data.UserProgress
+import com.example.andegym.data.model.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(application: Application): AndroidViewModel(application) {
     val app= application as App
 
-    private val progressUser= UserProgress(application)
+    private val progressUser= app.userProgress
 
     private val _nickname= MutableStateFlow("Пользователь")
     val nickname: StateFlow<String> = _nickname
@@ -30,7 +29,7 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
 
     fun getlevel(xp:Int):Int=progressUser.getlevel(xp)
 
-    val achievementManager= Achievement(application, progressUser)
+    val achievementManager= app.achievement
 
     val firstWorkoutFlow=achievementManager.firstWorkoutFlow
     val threeWorkoutFlow=achievementManager.threeWorkoutFlow
@@ -64,11 +63,14 @@ class ProfileViewModel(application: Application): AndroidViewModel(application) 
                 .document(uid)
                 .get()
                 .addOnSuccessListener { doc ->
-                _nickname.value = doc.getString("nickname") ?: "Пользователь"
-                    _isPublic.value = doc.getBoolean("isPublic") ?: true
+                    if (doc.exists()) {
+                        val user = doc.toUser()
+                        _nickname.value = user.nickname.ifBlank { "Пользователь" }
+                        _isPublic.value = user.isPublic
 
 
-            }
+                    }
+                }
 
         }
         viewModelScope.launch {

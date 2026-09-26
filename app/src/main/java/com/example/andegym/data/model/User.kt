@@ -6,7 +6,10 @@ data class User (
     val level :Int,
     val xp:Int,
     val isPublic: Boolean,
-    val totalVolume:Int,
-    val workoutCount:Int,
-    val friends: List<String>
+    val friends: List<String>,
+    val achFirstWorkout: Boolean = false,
+    val achEarlyBird: Boolean = false,
+    val achThreeWorkouts: Boolean = false,
+    val achTenWorkouts: Boolean = false,
+    val achHeavyLifter: Boolean = false
 )

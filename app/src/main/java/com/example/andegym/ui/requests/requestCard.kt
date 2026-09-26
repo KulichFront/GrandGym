@@ -16,6 +16,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +37,8 @@ import com.example.andegym.data.model.User
 fun requestCard(user: User,
                 onAccept:()->Unit,
                 onDecline:()->Unit){
+    var isButtonVisible by remember { mutableStateOf(true) }
+    if(isButtonVisible==true){
     Box(
         modifier=Modifier
 
@@ -78,14 +84,17 @@ fun requestCard(user: User,
                 )
             }
             Row(modifier = Modifier.padding(horizontal = 16.dp)){
-                Button(onClick={onAccept()}, modifier = Modifier.weight(1f)){
+                Button(onClick={
+                    onAccept()
+                    isButtonVisible=false           }, modifier = Modifier.weight(1f)){
                     Text(
                         text="Добавить",
                         fontSize = 14.sp
                     )
                 }
                 Spacer(Modifier.width(20.dp))
-                Button(onClick={onDecline()}, modifier = Modifier.weight(1f)){
+                Button(onClick={onDecline()
+                               isButtonVisible=false}, modifier = Modifier.weight(1f)){
                     Text(
                         text="Отклонить",
                         fontSize = 14.sp
@@ -97,7 +106,7 @@ fun requestCard(user: User,
 
     }
 }
-
+    }
 
 
 

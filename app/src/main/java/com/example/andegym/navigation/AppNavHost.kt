@@ -2,12 +2,14 @@ package com.example.andegym.navigation
 
 import android.R.attr.type
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.NavType.Companion.StringType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.andegym.App
 import com.example.andegym.Onboarding
 import com.example.andegym.ui.auth.LoginScreen
 import com.example.andegym.ui.dashboard.HomeScreen
@@ -24,10 +26,12 @@ fun AppNavHost(
     navHostController: NavHostController,
 
 ){
+    val app= LocalContext.current.applicationContext as App
     NavHost(
         navController = navHostController,
         startDestination = Destination.Auth.route,
     ){
+
 
         composable(route= Destination.Auth.route){
             LoginScreen( onAuthSuccess = {
@@ -81,7 +85,7 @@ fun AppNavHost(
                  profileClick ={navHostController.navigate(Destination.Me.route)},
                 onLogout = {
 
-                    FirebaseAuth.getInstance().signOut()
+                    app.logout()
                     navHostController.navigate(Destination.Auth.route) {
                         popUpTo(0) { inclusive = true }
                     }

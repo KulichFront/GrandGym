@@ -85,7 +85,7 @@ fun FriendProfileScreen(
     val tenWorkoutFlow by viewModel.tenWorkout.collectAsState()
     val earlyBirdFlow by viewModel.earlyBird.collectAsState()
     val heavyLifter by viewModel.heavyLifter.collectAsState()
-
+    val isPublic by viewModel.isPublic.collectAsState()
 
 
 
@@ -107,16 +107,24 @@ fun FriendProfileScreen(
 
             TopBarProfile(backClick=backClick)
             ProfileAvatar(nickname=nickname)
-            ScaleOfXP(xp,level.value)
-            Achievements(
-                firstWorkout=firstWorkoutFlow,
-                threeWorkout=threeWorkoutFlow,
-                tenWorkout = tenWorkoutFlow,
-                earlyBird=earlyBirdFlow,
-                heavyLifter = heavyLifter,
-                onAchievementClick = {
-                }
-            )
+            if (isPublic) {
+                ScaleOfXP(xp, level.value)
+                Achievements(
+                    firstWorkout = firstWorkoutFlow,
+                    threeWorkout = threeWorkoutFlow,
+                    tenWorkout = tenWorkoutFlow,
+                    earlyBird = earlyBirdFlow,
+                    heavyLifter = heavyLifter,
+                    onAchievementClick = {}
+                )
+            } else {
+                Text(
+                    text = "Этот профиль скрыт",
+                    color = Color(0xFFA0A0A0),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
 
         }
 

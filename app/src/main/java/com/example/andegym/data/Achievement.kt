@@ -1,6 +1,7 @@
 package com.example.andegym.data
 
 import android.content.Context
+import com.example.andegym.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,9 +12,9 @@ class Achievement(context: Context, private val userProgress: UserProgress){
     companion object {
         val ACH_FIRST_WORKOUT = "ach_first_workout"
         val ACH_EARLY_BIRD = "ach_early_bird"
-        val ACH_THREE_WORKOUTS ="ach_three_workout"
+        val ACH_THREE_WORKOUTS ="ach_three_workouts"
         val ACH_HEAVY_LIFTER = "ach_heavy_lifter"
-        val ACH_TEN_WORKOUTS = "ach_ten_workout"
+        val ACH_TEN_WORKOUTS = "ach_ten_workouts"
     }
 
     val _firstWorkoutFlow= MutableStateFlow(achievement_prefs.getBoolean(ACH_FIRST_WORKOUT,false))
@@ -82,7 +83,28 @@ class Achievement(context: Context, private val userProgress: UserProgress){
     }
 
     fun clearAchievement(){
-
+        achievement_prefs.edit().clear().apply()
+        _firstWorkoutFlow.value = false
+        _threeWorkoutFlow.value = false
+        _tenWorkoutFlow.value = false
+        _earlyBirdFlow.value = false
+        _heavyLifter.value = false
     }
+
+    fun setFromUser(user: User){
+        achievement_prefs.edit()
+            .putBoolean(ACH_FIRST_WORKOUT,user.achFirstWorkout)
+            .putBoolean(ACH_EARLY_BIRD,user.achEarlyBird)
+            .putBoolean(ACH_THREE_WORKOUTS,user.achThreeWorkouts)
+            .putBoolean(ACH_TEN_WORKOUTS,user.achTenWorkouts)
+            .putBoolean(ACH_HEAVY_LIFTER,user.achHeavyLifter)
+            .apply()
+        _firstWorkoutFlow.value = user.achFirstWorkout
+        _threeWorkoutFlow.value = user.achThreeWorkouts
+        _tenWorkoutFlow.value = user.achTenWorkouts
+        _earlyBirdFlow.value = user.achEarlyBird
+        _heavyLifter.value = user.achHeavyLifter
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.andegym.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.andegym.data.model.toUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,20 +46,17 @@ class FriendProfileViewModel(val uid:String): ViewModel() {
 
         firestore.collection("users").document(uid).get().addOnSuccessListener {
             document->
-            _nickname.value=document.getString("nickname")?:""
-            _xp.value=document.getLong("xp")?.toInt()?: 0
-            _level.value=document.getLong("level")?.toInt()?:1
-            _isPublic.value = document.getBoolean("isPublic") ?: true
+            val user = document.toUser()
+            _nickname.value = user.nickname.ifBlank { "Пользователь" }
+            _xp.value = user.xp
+            _level.value = user.level
+            _isPublic.value = user.isPublic
             if(isPublic.value){
-                _firstWorkout.value = document.getBoolean("ach_first_workout") ?: false
-
-                _threeWorkout.value = document.getBoolean("ach_three_workout") ?: false
-
-                _tenWorkout.value = document.getBoolean("ach_ten_workout") ?: false
-
-                _earlyBird.value = document.getBoolean("ach_early_bird") ?: false
-
-                _heavyLifter.value = document.getBoolean("ach_heavy_lifter") ?: false
+                _firstWorkout.value = user.achFirstWorkout
+                _threeWorkout.value = user.achThreeWorkouts
+                _tenWorkout.value = user.achTenWorkouts
+                _earlyBird.value = user.achEarlyBird
+                _heavyLifter.value = user.achHeavyLifter
             }
 
     }

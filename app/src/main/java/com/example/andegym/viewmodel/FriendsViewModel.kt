@@ -2,6 +2,7 @@ package com.example.andegym.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.andegym.data.model.User
+import com.example.andegym.data.model.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,22 +50,7 @@ class FriendsViewModel(): ViewModel() {
                 .addOnSuccessListener {
                     result->
                     if(!result.isEmpty){
-                        val document=result.documents.first()
-                        val id=document.id
-                        val nick=document.getString("nickname")
-                        val level=document.getLong("level")?.toInt()
-                        val xp=document.getLong("xp")?.toInt()
-                        val user=User(
-                            id,
-                            nick ?: "без ника",
-                            level ?: 0,
-                            xp ?: 0,
-                            document.getBoolean("isPublic") ?: true,
-                            document.getLong("totalVolume")?.toInt() ?: 0,
-                            document.getLong("workoutCount")?.toInt() ?: 0,
-                            document.get("friends") as? List<String> ?: emptyList()
-                        )
-                        _searchResult.value=user
+                        _searchResult.value=result.documents.first().toUser()
                         _searchError.value=null
                     }
                     else{
@@ -103,17 +89,11 @@ class FriendsViewModel(): ViewModel() {
                     var currentCount=0
                     friendsList.forEach { uid->
                         firestore.collection("users").document(uid).get().addOnSuccessListener { frienddoc->
-                            val user=User(
-                                frienddoc.id,
-                                frienddoc.getString("nickname")?: "",
-                                frienddoc.getLong("level")?.toInt()?: 0,
-                                frienddoc.getLong("xp")?.toInt() ?: 0,
-                                frienddoc.getBoolean("isPublic") ?: true,
-                                frienddoc.getLong("totalVolume")?.toInt() ?: 0,
-                                frienddoc.getLong("workoutCount")?.toInt() ?: 0,
-                                frienddoc.get("friends") as? List<String> ?: emptyList()
-                            )
-                            resultList.add(user)
+                            if(frienddoc.exists()){
+
+                                resultList.add(frienddoc.toUser())
+                            }
+
                             currentCount++
                             if(totalCount==currentCount){
                                 _friends.value=resultList
@@ -149,17 +129,9 @@ class FriendsViewModel(): ViewModel() {
                         document.documents.forEach {doc ->
                             val fromId=doc.getString("from") ?: return@forEach
                             firestore.collection("users").document(fromId).get().addOnSuccessListener { doc->
-                                val user=User(
-                                    doc.id,
-                                    doc.getString("nickname")?:"",
-                                    doc.getLong("level")?.toInt() ?:0,
-                                    doc.getLong("xp")?.toInt() ?:0,
-                                    doc.getBoolean("isPublic") ?: true,
-                                    doc.getLong("totalVolume")?.toInt() ?: 0,
-                                    doc.getLong("workoutCount")?.toInt() ?: 0,
-                                    doc.get("friends") as? List<String> ?: emptyList()
-                                )
-                                resultList.add(user)
+                                if(doc.exists()){
+                                    resultList.add(doc.toUser())
+                                }
                                 currentCount++
                                 if(currentCount==totalCount){
                                     _requestsFlow.value=resultList
@@ -213,6 +185,7 @@ class FriendsViewModel(): ViewModel() {
                     resultDoc?.reference?.update("status", "accepted")
                 }
         }
+
     }
 
 }
